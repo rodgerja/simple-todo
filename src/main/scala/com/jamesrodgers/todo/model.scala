@@ -1,5 +1,7 @@
 package com.jamesrodgers.todo
 
+import org.squeryl.KeyedEntity
+
 
 case class TodoItem(
   // Id, unique identifier for each item. This should be created by the server on creation
@@ -13,4 +15,4 @@ case class TodoItem(
 
   // Boolean to mark a task as it has been done
   isDone: Boolean = false
-) 
+) extends KeyedEntity[Long]

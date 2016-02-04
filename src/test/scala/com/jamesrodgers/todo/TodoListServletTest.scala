@@ -6,9 +6,14 @@ import org.json4s.jackson.Serialization.{write => writeJson}
 import org.scalatest.{BeforeAndAfter, FunSuiteLike}
 import org.scalatra.test.scalatest.ScalatraSuite
 
-class TodoListServletTest extends ScalatraSuite with FunSuiteLike with BeforeAndAfter {
+class TodoListServletTest extends ScalatraSuite with FunSuiteLike with BeforeAndAfter with Database {
   implicit val formats = DefaultFormats
   addServlet(classOf[TodoListServlet], "/*")
+
+  before {
+    configureDb()
+      createDb()
+  }
 
   test("GET returns 200 and empty list on empty database") {
     get("/todos") {
@@ -17,15 +22,14 @@ class TodoListServletTest extends ScalatraSuite with FunSuiteLike with BeforeAnd
     }
   }
 
-  test("POST should store item and assign id") {
+  test("POST should store item and assign id and default 'isDone' to false") {
     val newItem = TodoItem(id = 0, priority = 1, description = "Important one")
     val expectedItem = TodoItem(id = 1, priority = 1, description = "Important one", isDone = false)
 
     post("/todos", writeJson(newItem)) {
       status should equal(201)
       val returnedItem = parse(body).extract[TodoItem]
-
-      expectedItem should equal(returnedItem)
+      itemsAreEqual(expectedItem, returnedItem) should be(true)
     }
   }
 
@@ -42,7 +46,18 @@ class TodoListServletTest extends ScalatraSuite with FunSuiteLike with BeforeAnd
     get("/todos") {
       status should equal(200)
       val returnedItems = parse(body).extract[List[TodoItem]]
-      // TODO: assert equality
+
+      itemsAreEqual(expectedSavedItem1, returnedItems(0)) should be(true)
+      itemsAreEqual(expectedSavedItem2, returnedItems(1)) should be(true)
     }
+  }
+
+  // TODO: priority constraints
+
+  def itemsAreEqual(item1: TodoItem, item2: TodoItem): Boolean = {
+    item1.id == item2.id &&
+    item1.priority == item2.priority &&
+    item1.description == item2.description &&
+    item1.isDone == item2.isDone
   }
 }

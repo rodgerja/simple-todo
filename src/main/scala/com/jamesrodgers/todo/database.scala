@@ -11,7 +11,7 @@ trait Database {
 
   val user = "root"
   val password = ""
-  val connectionString = "jdbc:h2:~/todo.db"
+  val connectionString = "jdbc:h2:mem:todo"
 
   var dataSource = new ComboPooledDataSource
 
