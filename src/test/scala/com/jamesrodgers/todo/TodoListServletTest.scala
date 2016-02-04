@@ -17,12 +17,6 @@ class TodoListServletTest extends ScalatraSuite with FunSuiteLike with BeforeAnd
     }
   }
 
-  test("POST should store item") {
-    post("/todos", "{}") {
-      status should equal(201)
-    }
-  }
-
   test("POST should store item and assign id") {
     val newItem = TodoItem(id = 0, priority = 1, description = "Important one")
     val expectedItem = TodoItem(id = 1, priority = 1, description = "Important one", isDone = false)
