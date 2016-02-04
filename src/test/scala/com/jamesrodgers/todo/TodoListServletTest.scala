@@ -28,4 +28,21 @@ class TodoListServletTest extends ScalatraSuite with FunSuiteLike with BeforeAnd
       expectedItem should equal(returnedItem)
     }
   }
+
+  test("Can retrieve stored items") {
+    val newItem1 = TodoItem(priority = 1, description = "Important one")
+    val newItem2 = TodoItem(priority = 5, description = "Unimportant one")
+
+    val expectedSavedItem1 = TodoItem(id = 1, priority = 1, description = "Important one", isDone = false)
+    val expectedSavedItem2 = TodoItem(id = 2, priority = 5, description = "Unimportant one", isDone = false)
+
+    post("/todos", writeJson(newItem1)) {}
+    post("/todos", writeJson(newItem2)) {}
+
+    get("/todos") {
+      status should equal(200)
+      val returnedItems = parse(body).extract[List[TodoItem]]
+      // TODO: assert equality
+    }
+  }
 }

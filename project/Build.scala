@@ -17,6 +17,9 @@ object TodoListBuild extends Build {
         "org.eclipse.jetty" % "jetty-webapp" % "9.2.14.v20151106" % "container",
         "org.scalatra" %% "scalatra-json" % ScalatraVersion,
         "org.json4s"   %% "json4s-jackson" % "3.3.0.RC1",
+        "org.squeryl" %% "squeryl" % "0.9.5-7",
+        "com.h2database" % "h2" % "1.3.166",
+        "c3p0" % "c3p0" % "0.9.1.2",
         "org.scalatra" %% "scalatra-scalatest" % ScalatraVersion % "test"
       )
     )
