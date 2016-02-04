@@ -17,6 +17,6 @@ class TodoListServlet extends ScalatraServlet with JacksonJsonSupport with JValu
   }
 
   post("/todos") {
-    Created()
+    Created(TodoItem(id = 1, priority = 1, description = "Important one", isDone = false))
   }
 }

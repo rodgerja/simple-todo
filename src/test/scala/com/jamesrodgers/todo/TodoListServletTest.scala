@@ -13,13 +13,25 @@ class TodoListServletTest extends ScalatraSuite with FunSuiteLike with BeforeAnd
   test("GET returns 200 and empty list on empty database") {
     get("/todos") {
       status should equal(200)
-      body should be("[]")
+      body should equal("[]")
     }
   }
 
   test("POST should store item") {
     post("/todos", "{}") {
       status should equal(201)
+    }
+  }
+
+  test("POST should store item and assign id") {
+    val newItem = TodoItem(id = 0, priority = 1, description = "Important one")
+    val expectedItem = TodoItem(id = 1, priority = 1, description = "Important one", isDone = false)
+
+    post("/todos", writeJson(newItem)) {
+      status should equal(201)
+      val returnedItem = parse(body).extract[TodoItem]
+
+      expectedItem should equal(returnedItem)
     }
   }
 }
