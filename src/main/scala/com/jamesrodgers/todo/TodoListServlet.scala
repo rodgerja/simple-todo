@@ -1,6 +1,6 @@
 package com.jamesrodgers.todo
 
-import org.json4s.{DefaultFormats, Formats}
+import org.json4s.{DefaultFormats, Formats, MappingException}
 import org.scalatra._
 import org.scalatra.json._
 import org.squeryl.PrimitiveTypeMode._
@@ -45,6 +45,7 @@ class TodoListServlet extends ScalatraServlet with JacksonJsonSupport with JValu
 
     newItemTry match {
       case Failure(badItemFields: ItemFieldsException) => BadRequest(badItemFields)
+      case Failure(parseError: MappingException) => BadRequest(parseError)
       case Failure(dbError) => InternalServerError(dbError)
       case Success(todo) => Created(todo)
     }

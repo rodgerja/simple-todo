@@ -74,14 +74,18 @@ class TodoListServletTest extends ScalatraSuite with FunSuiteLike with BeforeAnd
   }
 
   test("'isDone' must be missing or false for new item") {
-    val badId = TodoItem(priority = 1, description = "Already done!", isDone = true)
+    val badIsDone = TodoItem(priority = 1, description = "Already done!", isDone = true)
 
-    post("/todos", writeJson(badId)) {
+    post("/todos", writeJson(badIsDone)) {
       status should equal(400)
     }
   }
 
-  // TODO: 400 on bad json
+  test("Posting bad json returns a 400") {
+    post("/todos", "{}") {
+      status should equal(400)
+    }
+  }
 
   def itemsAreEqual(item1: TodoItem, item2: TodoItem): Boolean = {
     item1.id == item2.id &&
