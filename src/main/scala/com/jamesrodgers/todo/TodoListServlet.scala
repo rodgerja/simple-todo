@@ -6,6 +6,7 @@ import org.scalatra.json._
 import org.squeryl.PrimitiveTypeMode._
 import TodoListSchema.todo_items
 import org.slf4j.LoggerFactory
+import scala.util.{Failure, Success, Try}
 
 
 class TodoListServlet extends ScalatraServlet with JacksonJsonSupport with JValueResult {
@@ -18,8 +19,14 @@ class TodoListServlet extends ScalatraServlet with JacksonJsonSupport with JValu
   }
 
   get("/todos") {
-      val retrievedItems = transaction(from(todo_items)(select(_)).toList)
-      Ok(retrievedItems)
+    Try {
+      transaction {
+        from(todo_items)(select(_)).toList
+      }
+    } match {
+      case Failure(error) => InternalServerError(error)
+      case Success(todo_items) => Ok(todo_items)
+    }
   }
 
   post("/todos") {
@@ -27,5 +34,19 @@ class TodoListServlet extends ScalatraServlet with JacksonJsonSupport with JValu
     val savedItem = transaction(todo_items.insert(parsedItem))
 
     Created(savedItem)
+  }
+
+  post("/todos") {
+    val newItemTry = for {
+      parsedItem <- Try(parsedBody.extract[TodoItem])
+      validatedItem <- Try(parsedItem.validateNew())
+      savedItem <- Try(transaction(todo_items.insert(validatedItem)))
+    } yield savedItem
+
+    newItemTry match {
+      case Failure(badItemFields: ItemFieldsException) => BadRequest(badItemFields)
+      case Failure(dbError) => InternalServerError(dbError)
+      case Success(todo) => Created(todo)
+    }
   }
 }

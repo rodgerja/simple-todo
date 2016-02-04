@@ -52,7 +52,20 @@ class TodoListServletTest extends ScalatraSuite with FunSuiteLike with BeforeAnd
     }
   }
 
-  // TODO: priority constraints
+  test("Priority must be between 1 and 5") {
+    val tooLow = TodoItem(priority = 0, description = "Really important one")
+    val tooHigh = TodoItem(priority = 6, description = "Really unimportant one")
+
+    post("/todos", writeJson(tooLow)) {
+      status should equal(400)
+    }
+
+    post("/todos", writeJson(tooHigh)) {
+      status should equal(400)
+    }
+  }
+
+  // TODO: barf if id is not 0 or isDone is not false
 
   def itemsAreEqual(item1: TodoItem, item2: TodoItem): Boolean = {
     item1.id == item2.id &&

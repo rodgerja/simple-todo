@@ -15,4 +15,14 @@ case class TodoItem(
 
   // Boolean to mark a task as it has been done
   isDone: Boolean = false
-) extends KeyedEntity[Long]
+) extends KeyedEntity[Long] {
+
+  def validateNew(): TodoItem = {
+    if (priority < 1 || priority > 5)
+      throw new ItemFieldsException("Priority must be between 1 and 5 inclusive")
+
+    return this
+  }
+}
+
+case class ItemFieldsException(msg: String) extends Exception(msg)
