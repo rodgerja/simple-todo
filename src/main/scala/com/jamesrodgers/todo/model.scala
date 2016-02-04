@@ -18,8 +18,11 @@ case class TodoItem(
 ) extends KeyedEntity[Long] {
 
   def validateNew(): TodoItem = {
+    if (id != 0)
+      throw new ItemFieldsException("Unsaved todo items must have id equal to 0")
     if (priority < 1 || priority > 5)
       throw new ItemFieldsException("Priority must be between 1 and 5 inclusive")
+    if (isDone) throw new ItemFieldsException("Unsaved todo items must have 'isDone' set to false")
 
     return this
   }
